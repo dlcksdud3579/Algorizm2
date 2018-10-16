@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# add
+*.tlog
+MaxFlow.VC.VC.opendb
