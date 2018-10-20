@@ -12,6 +12,8 @@ public:
 	void setNextNode(Node* _next);
 	int getNodeNum() { return this->nodeNum; }
 	void setNodeNum(int _nodeNum) {this->nodeNum = _nodeNum;}
+	int getEdgeNum() { return this->edgeNum; }
+	void getEdgeNum(int _edgeNum) { this->edgeNum = _edgeNum; }
 	virtual string toString();
 	Node(int _nodeNum , int edgeNum);
 	Node();

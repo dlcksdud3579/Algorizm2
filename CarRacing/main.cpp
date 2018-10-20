@@ -5,11 +5,22 @@ using namespace std;
 
 void inputFile(int *nodeNum);
 AdjList * adjList;
+int nodeNum = 0;
+int *d, *p;
+
+void intializeSingleSource(int start);
+
+void relax(int u, int v);
+
+bool bellmanFord(int start);
+
+int* path(int end,int *top);
 
 int main()
 {
-	int nodeNum = 0;
-	int *d, *p;
+	
+	int *root;
+	int top = 0;
 	inputFile(&nodeNum);
 	cout << adjList->toString() << endl;
 
@@ -17,14 +28,50 @@ int main()
 	d = new int[nodeNum];
 	p = new int[nodeNum];
 
-	
+	bellmanFord(0);
+	for (int i = 0 ;i< nodeNum; i++)
+	{
+		cout<< p[i];
+	}
+	cout << endl;
+	for (int i = 0; i< nodeNum; i++)
+	{
+		cout << d[i]<<" ";
+	}
+	cout << endl;
 
+	
+	cout << "--------------°á°ú-----------------" << endl;
+	root = path(6,&top);
+	cout << d[6] << endl;
+	cout << top << endl;
+	for (int i = top-1; i >= 0; i--)
+	{
+		cout<<root[i]<<" ";
+	}
+
+	cout << endl;
 
 	delete(adjList);
 	delete[] d;
 	delete[] p;
 	return 0;
 }
+int* path(int end,int *top)
+{
+	int *result;
+	result = new int[nodeNum];
+	int index = p[end];
+	while (index != 0)
+	{
+		
+		result[(*top)++] = index;
+		index = p[index];
+	}
+
+	return  result;
+}
+
 
 void inputFile(int *nodeNum )
 {
@@ -89,4 +136,56 @@ void inputFile(int *nodeNum )
 	delete[] distance;
 	delete[] maintenance;
 	
+}
+
+void intializeSingleSource(int start)
+{
+	for (int i = 0; i< nodeNum; i++)
+	{
+		d[i] = 50000000;
+		p[i] = NULL;
+	}
+	d[start] = 0;
+}
+
+void relax(int u, int v)
+{
+	if (d[v] > d[u] + adjList->getList(u)->getNode(v)->getEdgeNum())
+	{
+		d[v] = d[u] + adjList->getList(u)->getNode(v)->getEdgeNum();
+		p[v] = u;
+	}
+}
+
+bool bellmanFord(int start)
+{
+	intializeSingleSource(start);
+	for (int i = 1; i<nodeNum - 1; i++)
+	{
+		for (int u = 0; u<nodeNum; u++)
+		{
+			int v;
+			Node* hnode = adjList->getList(u)->getFirstNode();
+			while (hnode != NULL)
+			{
+				v = hnode->getNodeNum();
+				relax(u, v);
+				hnode = hnode->getNextNode();
+			}
+		}
+	}
+	for (int u = 0; u<nodeNum; u++)
+	{
+		int v;
+		Node* hnode = adjList->getList(u)->getFirstNode();
+		while (hnode != NULL)
+		{
+			v = hnode->getNodeNum();
+			if (d[v] > d[u] + adjList->getList(u)->getNode(v)->getEdgeNum())
+				return false;
+			hnode = hnode->getNextNode();
+		}
+	}
+
+	return true;
 }
