@@ -16,6 +16,7 @@ public:
 	void getEdgeNum(int _edgeNum) { this->edgeNum = _edgeNum; }
 	virtual string toString();
 	Node(int rowNum ,int _nodeNum , int edgeNum);
+	Node(int _nodeNum);
 	Node();
 	~Node();
 

@@ -27,6 +27,7 @@ string Llist::toString()
 	while (hnode != nullptr)
 	{
 		ostr << hnode->toString();
+		ostr << "\n";
 		hnode = hnode->getNextNode();
 	}
 	return ostr.str();

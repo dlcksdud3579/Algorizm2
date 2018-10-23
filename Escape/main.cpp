@@ -24,11 +24,13 @@ int* color = NULL;
 int* p = NULL;
 int* d = NULL;
 
-MFAdjList* adjList;// 그래프 
+AdjList* adjList;// 그래프
+MFAdjList* mfadjList;
 Queue* Q; // 큐
 BTList* bTList;
 //minList;// 최소리스트;
 void inputFile(int *size, int **matrix);
+void inputFile2(int *nodeNum, int *edgeNum);
 
 void bfs(const int nodeNum, int start);
 
@@ -47,14 +49,10 @@ int main()
 	int * matrix = NULL;
 	int Nodecnt = 1;
 	int cnt = 0;;
-	ofstream oF = ofstream("ouput.txt");
+	ofstream oF = ofstream("output.txt");
 	int nodeNum;
 	int edgeNum, maxflow = 0;
 
-	
-
-	
-	
 	inputFile(&size, &matrix);
 	
 	nodeNum = size*size * 2 + 1;
@@ -74,11 +72,11 @@ int main()
 	rmove[2] = 1;
 	rmove[3] = size * 2 - 1;
 
-	adjList = new MFAdjList(size*size *2 +2);
+	adjList = new AdjList(size*size *2 +2);
 	for (int i= 0 ;i < size*size; i++)
 	{
 		// i*2 +1   ->  i*2+2
-		MFNode * tempNode = new MFNode(i * 2 + 1,i * 2 + 2, 1);
+		Node * tempNode = new Node(i * 2 + 1,i * 2 + 2, 1);
 		int flag = 0;
 		adjList->InsertNode(i * 2 + 1,tempNode);
 		cnt++;
@@ -93,7 +91,7 @@ int main()
 				{
 					if (flag != 1)
 					{
-						MFNode * tempNode = new MFNode(i * 2 + 2,size*size * 2 + 1, 1);
+						Node * tempNode = new Node(i * 2 + 2,size*size * 2 + 1, 1);
 						adjList->InsertNode(i * 2 + 2,tempNode);
 						cnt++;
 						flag = 1;
@@ -104,7 +102,7 @@ int main()
 				{
 					if (flag != 1)
 					{
-						MFNode * tempNode = new MFNode(i * 2 + 2,size*size * 2 + 1, 1);
+						Node * tempNode = new Node(i * 2 + 2,size*size * 2 + 1, 1);
 						adjList->InsertNode(i * 2 + 2,tempNode);
 						cnt++;
 						flag = 1;
@@ -112,13 +110,13 @@ int main()
 					continue;
 				}
 			
-				MFNode * tempNode = new MFNode(i * 2 + 2,i*2+2  + rmove[j], 1);
+				Node * tempNode = new Node(i * 2 + 2,i*2+2  + rmove[j], 1);
 				adjList->InsertNode(i * 2 + 2,tempNode);
 				cnt++;
 			}
 			else if (flag != 1)// 모서리 인경우 
 			{
-				MFNode * tempNode = new MFNode(i * 2 + 2,size*size * 2 + 1, 1);
+				Node * tempNode = new Node(i * 2 + 2,size*size * 2 + 1, 1);
 				adjList->InsertNode(i * 2 + 2,tempNode);
 				cnt++;
 				flag = 1;
@@ -127,39 +125,41 @@ int main()
 
 		if (matrix[i] == 1) // 검은점인경우 
 		{
-			MFNode * tempNode = new MFNode(0,i * 2 + 1, 1);
+			Node * tempNode = new Node(0,i * 2 + 1, 1);
 			adjList->InsertNode(0,tempNode);
 			cnt++;
 		}
 	}
 	//cout << size*size * 2 << " " << cnt << endl;
 	//cout<< adjList->toString();
-	//oF <<  size*size*2<<" "<<cnt<<endl;
-	//oF << adjList->toString();
-
-
-	size = adjList->getList(0)->size();
+	oF <<  size*size*2<<" "<<cnt<<endl;
+	oF << adjList->toString();
+	oF.close();
+	
+	
+	inputFile2(&nodeNum, &edgeNum);
+	
 	while (p[nodeNum] != -1)
 	{
 		bfs(nodeNum, 0);
 		for (int i = 0; i <= nodeNum; i++)
 		{
-			cout<<p[i]<<" ";
+			//cout<<p[i]<<" ";
 		}
-		cout<< endl;
+		//cout<< endl;
 
 		printTop(nodeNum);
-	//	cout << adjList->toString() << endl;
+		//cout << adjList->toString() << endl;
 
 	}
-	MFNode* hNode = dynamic_cast<MFNode*>(adjList->getList(0)->getFirstNode());
+	MFNode* hNode = dynamic_cast<MFNode*>(mfadjList->getList(0)->getFirstNode());
 	while (hNode != nullptr)
 	{
 		maxflow += hNode->getFlow();
 		hNode = dynamic_cast<MFNode*>(hNode->getNextNode());
 	}
 
-
+	size = adjList->getList(0)->size();
 
 	if (size <= maxflow)
 	{
@@ -173,17 +173,49 @@ int main()
 	}
 
 
-
 	delete(p);
 	delete(d);
 	delete(Q);
 	delete(bTList);
 	delete(adjList);
+	delete(mfadjList);
 	delete(matrix);
 	return 0;
 }
 
 
+void inputFile2(int *nodeNum, int *edgeNum)
+{
+
+	string tempStr;
+	int *tmpInput = new int[3];
+	int i = 1;
+	ifstream inFile = ifstream("output.txt");
+	inFile >> tempStr;
+	*nodeNum = stoi(tempStr) + 1;
+	inFile >> tempStr;
+	*edgeNum = stoi(tempStr);
+
+	mfadjList = new MFAdjList(*nodeNum + 1);
+
+
+	i = 1;
+	while (!inFile.eof())
+	{
+		inFile >> tempStr;
+		tmpInput[0] = stoi(tempStr);
+		inFile >> tempStr;
+		tmpInput[1] = stoi(tempStr);
+		inFile >> tempStr;
+		tmpInput[2] = stoi(tempStr);
+
+
+		MFNode *node = new MFNode(tmpInput[1], tmpInput[2], 0);
+		mfadjList->InsertNode(tmpInput[0], node);
+	}
+
+	//cout<< adjList->toString()<<endl;
+}
 void inputFile(int *size, int **matrix)
 {
 
@@ -208,12 +240,6 @@ void inputFile(int *size, int **matrix)
 			(*matrix)[i*(*size) + j] = tempStr.at(j) - '0';
 		}
 	}
-
-
-
-
-
-
 }
 
 
@@ -236,7 +262,7 @@ void bfs(const int nodeNum, int start)
 	while (Q->getFirstNode() != NULL)
 	{
 		int u = Q->getFirstNode()->getNodeNum();
-		MFNode* hnode = dynamic_cast<MFNode* >(adjList->getList(u)->getFirstNode());
+		MFNode* hnode = dynamic_cast<MFNode* >(mfadjList->getList(u)->getFirstNode());
 		while (hnode != NULL)
 		{
 			int v = hnode->getNodeNum();
@@ -272,7 +298,7 @@ void printTop(int n)
 	while (p[index] != -1)
 	{
 		p[index];
-		MRNode *mRNode = new MRNode(0, dynamic_cast<MFNode*>(adjList->getList(index)->getNode(p[index]))->getbudy());
+		MRNode *mRNode = new MRNode(0, dynamic_cast<MFNode*>(mfadjList->getList(index)->getNode(p[index]))->getbudy());
 		bTList->InsertNode(mRNode);
 		index = p[index];
 	}

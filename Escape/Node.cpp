@@ -9,6 +9,12 @@ Node::Node(int rowNum, int _nodeNum, int edgeNum)
 	this->nodeNum = _nodeNum;
 	this->edgeNum = edgeNum;
 }
+Node::Node(int _nodeNum)
+{
+	this->next = nullptr;
+	this->nodeNum = _nodeNum;
+}
+
 
 Node::Node()
 {
@@ -33,7 +39,6 @@ string Node::toString()
 	ostr << to_string(this->nodeNum);
 	ostr << " ";
 	ostr << to_string(this->edgeNum);
-	ostr << "\n";
 	return ostr.str();
 }
 void Node::setNextNode(Node* _next)

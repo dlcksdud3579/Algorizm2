@@ -1,9 +1,9 @@
 #include "MFNode.h"
 
-MFNode::MFNode(int rowNum,int _nodeNum,int _capacity):Node(rowNum,_nodeNum, _capacity)
+MFNode::MFNode(int _nodeNum, int _capacity, int _flow) :Node(_nodeNum)
 {
 	this->capacity = _capacity;
-	this->flow = 0;
+	this->flow = _flow;
 	this->budy = nullptr;
 }
 MFNode::~MFNode()
