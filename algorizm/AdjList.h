@@ -13,6 +13,7 @@ public:
 	virtual void InsertNode(int rowNum, Node* inPutNode);
 	string toString();
 	Llist* getList(int _rowNum);
+	
 	~AdjList();
 };
 

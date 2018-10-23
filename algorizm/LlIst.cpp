@@ -32,6 +32,19 @@ string Llist::toString()
 	return ostr.str();
 }
 
+int Llist::size()
+{
+	int size = 0;
+	Node *hnode = this->firstNode;
+
+	while (hnode != nullptr)
+	{
+		size++;
+		hnode = hnode->getNextNode();
+	}
+	return size;
+}
+
 Node* Llist::getFirstNode()
 {
 	return this->firstNode;

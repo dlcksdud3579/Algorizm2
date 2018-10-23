@@ -15,7 +15,7 @@ void relax(int u, int v);
 bool bellmanFord(int start);
 
 int* path(int end,int *top);
-
+int flag = 0;
 int main()
 {
 	
@@ -42,8 +42,8 @@ int main()
 
 	
 	cout << "--------------°á°ú-----------------" << endl;
-	root = path(6,&top);
-	cout << d[6] << endl;
+	root = path(nodeNum-1,&top);
+	cout << d[nodeNum - 1] << endl;
 	cout << top << endl;
 	for (int i = top-1; i >= 0; i--)
 	{
@@ -57,6 +57,7 @@ int main()
 	delete[] p;
 	return 0;
 }
+
 int* path(int end,int *top)
 {
 	int *result;
@@ -155,6 +156,10 @@ void relax(int u, int v)
 		d[v] = d[u] + adjList->getList(u)->getNode(v)->getEdgeNum();
 		p[v] = u;
 	}
+	else
+	{
+		flag  = 0;
+	}
 }
 
 bool bellmanFord(int start)
@@ -164,14 +169,22 @@ bool bellmanFord(int start)
 	{
 		for (int u = 0; u<nodeNum; u++)
 		{
+			if (flag == 1)
+			{
+				flag = 0;
+				break;
+			}
+
 			int v;
 			Node* hnode = adjList->getList(u)->getFirstNode();
 			while (hnode != NULL)
 			{
+				
 				v = hnode->getNodeNum();
 				relax(u, v);
 				hnode = hnode->getNextNode();
 			}
+			
 		}
 	}
 	for (int u = 0; u<nodeNum; u++)

@@ -41,3 +41,4 @@ AdjList::~AdjList()
 	}
 	free(rowList);
 }
+

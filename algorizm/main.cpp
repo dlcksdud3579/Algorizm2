@@ -34,6 +34,7 @@ int main()
 	int nodeNum;
 	int edgeNum,maxflow = 0;
 	inputFile(&nodeNum,&edgeNum);
+	int size = adjList->getList(0)->size();
 	color = new int[nodeNum + 1];
 	p = new int[nodeNum + 1];
 	d = new int[nodeNum + 1];
@@ -45,12 +46,12 @@ int main()
 		bfs(nodeNum, 0);
 		for (int i = 0; i<= nodeNum; i++)
 		{
-		cout<<p[i]<<" ";
+		//cout<<p[i]<<" ";
 		}
-		cout<< endl;
+		//cout<< endl;
 	
 		printTop(nodeNum);
-		cout << adjList->toString() << endl;
+		//cout << adjList->toString() << endl;
 		
 	}
 	MFNode* hNode = dynamic_cast<MFNode*>(adjList->getList(0)->getFirstNode());
@@ -60,7 +61,19 @@ int main()
 		hNode = dynamic_cast<MFNode*>(hNode->getNextNode());
 	}
 
-	cout << "´ä:" << maxflow << endl;
+	
+	
+	if (size <= maxflow)
+	{
+		cout << "START:" << size << " = MAX:" << maxflow << endl;
+		cout << "escape success!!";
+	}
+	else
+	{
+		cout << "START:" << size << "\t!=\tMAX:" << maxflow << endl;
+		cout << "escape fail!!";
+	}
+	
 
 	
 	delete(p);
@@ -142,7 +155,7 @@ void inputFile(int *nodeNum, int *edgeNum)
 		adjList->InsertNode(tmpInput[0], node);
 	}
 	
-	 cout<< adjList->toString()<<endl;
+	 //cout<< adjList->toString()<<endl;
 }
 
 void printTop(int n)
@@ -178,7 +191,7 @@ void printTop(int n)
 		tempNode->getbudy()->setFlow(tempNode->getbudy()->getFlow() - min);
 		hnode = dynamic_cast<MRNode*>(hnode->getNextNode());
 	}
-	cout << bTList->toString()<<endl;
+	//cout << bTList->toString()<<endl;
 	bTList->clearNode();
 }
 

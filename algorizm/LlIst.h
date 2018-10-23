@@ -18,6 +18,7 @@ public:
 	string toString();
 	Node* getNode(int _nodeNum);
 	void clearNode();
+	int size();
 	Llist();
 	~Llist();
 };
