@@ -103,7 +103,7 @@ void inputFile2(int *nodeNum , int *edgeNum)
 	string tempStr;
 	int *tmpInput = new int[3];
 	int i = 1;
-	ifstream inFile = ifstream("test2.txt");
+	ifstream inFile = ifstream("test.txt");
 	inFile >> tempStr;
 	int nodeNum1 = stoi(tempStr);
 	inFile >> tempStr;
