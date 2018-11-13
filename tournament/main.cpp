@@ -21,7 +21,7 @@ int main()
 	string tempStr;
 
 
-	ifstream inFile = ifstream("Text.txt");
+	ifstream inFile = ifstream("Text1.txt");
 	inFile >> capacity;
 	inFile >> exampleNum;
 	inFile >> playerNum;
@@ -53,21 +53,21 @@ int main()
 		example = stoi(tempStr);
 		int index = 1;
 		int q = 0;
-		if (player[tree[index]] > example)
+		if (player[tree[index]] >= example)
 		{
 			while (1)
 			{
-				if (player[tree[2 * index]] > example)
+				if (player[tree[2 * index]] >= example)
 					index *= 2;
 				else
 					index = index * 2+1;
 				if (2 * index >= playerNum)
 				{
-					int q = index * 2 - (playerNum - 1);
+					q = index * 2 - (playerNum - 1);
 
-					if (player[q] > example)
+					if (player[q] >= example)
 						player[q] -= example;
-					else if (player[q + 1] > example)
+					else if (player[q + 1] >= example)
 						player[q + 1] -= example;
 					else
 					{
@@ -86,6 +86,9 @@ int main()
 				tree[index] = q;
 			while (index >1)
 			{
+				if (index % 2 != 0)
+					index -= 1;
+
 				if (player[tree[index]] < player[tree[index + 1]])
 					tree[index / 2] = tree[index+1];
 				else
