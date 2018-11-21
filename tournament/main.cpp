@@ -21,7 +21,7 @@ int main()
 	string tempStr;
 
 
-	ifstream inFile = ifstream("Text1.txt");
+	ifstream inFile = ifstream("Text.txt");
 	inFile >> capacity;
 	inFile >> exampleNum;
 	inFile >> playerNum;
