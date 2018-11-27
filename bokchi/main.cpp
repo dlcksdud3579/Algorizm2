@@ -11,8 +11,8 @@ enum COLOR
 	WHITE,GRAY,BLACK
 };
 
-int moveX[4] = { 0,1,0,-1 };
-int moveY[4] = { -1,0,1,0 };
+int moveX[4] = { -1,1,0,0 };
+int moveY[4] = { 0,0,-1,1 };
 
 typedef struct pdata
 {
@@ -24,7 +24,10 @@ typedef struct pdata
 void inputFile();
 
 int n = 0;
-pdata* PQ;
+pdata* Q;
+
+int rear=0;
+int front=0;
 
 int** map;
 int**d;
@@ -35,6 +38,7 @@ int** color;
 int Bsize = 2;
 int x;
 int y;
+int time = 0;
 
 int exe = 0;
 
@@ -53,10 +57,10 @@ void main()
 	int top = 0;
 	inputFile();
 
-	PQ = new pdata[n*n];
-	PQ[0].x = 0;
-	PQ[0].y = 0;
-	PQ[0].d = 0;
+	Q = new pdata[n*n];
+	Q[0].x = 0;
+	Q[0].y = 0;
+	Q[0].d = 0;
 
 	while (BFS()){}
 
@@ -80,9 +84,9 @@ void main()
 }
 bool BFS()
 {
-	for (int i = 0; i < n;i++)
+	for (int i = 1; i <= n;i++)
 	{
-		for (int j = 0; j < n;j++)
+		for (int j = 1; j <= n;j++)
 		{
 			color[i][j] = WHITE;
 			d[i][j] = infinity;
@@ -99,21 +103,23 @@ bool BFS()
 	temp.d = d[y][x];
 	insertPQ(temp);
 
-	while (PQ[0].d != 0)
+	while (front!= rear)
 	{
-		pdata u = PQ[PQ[0].d];
+		pdata u = Q[front];
 		for (int i = 0; i <4; i++)
 		{
 			
 			int vx = u.x + moveX[i];
 			int vy = u.y + moveY[i];
+
 			if (vx < 1 || vy < 1 || vx > n || vy > n)
 				continue;
 
 			if (map[vy][vx] > 0 && map[vy][vx] < Bsize)
 			{
 				map[vy][vx] = 0;
-				printf("<%d %d> <%d,%d> %d\n", x-1, y-1, vy-1, vx-1,d[y][x]+1);
+				time += d[u.y][u.x] + 1;
+				printf("<%d %d> <%d,%d> %d\n", y-1, x-1, vy-1, vx-1, time);
 				x = vx;
 				y = vy;
 				exe++;
@@ -122,11 +128,11 @@ bool BFS()
 					Bsize++;
 					exe = 0;
 				}
-				PQ[0].d = 0;
-
+				front = 0;
+				rear = 0;
 				return true;
 			}
-			if (color[vy][vx] == WHITE && map[vy][vx] <= Bsize) {
+			if (color[vy][vx] == WHITE && map[vy][vx] <= Bsize){
 				color[vy][vx] = GRAY;
 				d[vy][vx] = d[u.y][u.x] + 1;
 				temp.x = vx;
@@ -134,10 +140,9 @@ bool BFS()
 				temp.d = d[vy][vx];
 				insertPQ(temp);
 			}
-			popPQ();
-			color[u.y][u.x] = BLACK;
-
 		}
+		popPQ();
+		color[u.y][u.x] = BLACK;
 	}
 	return false;
 }
@@ -149,16 +154,16 @@ void inputFile()
 	string tempStr;
 	char tempchar;
 	int i = 1;
-	ifstream inFile = ifstream("Text1.txt");
+	ifstream inFile = ifstream("Text.txt");
 
 	inFile >> tempStr;
 	n = stoi(tempStr);
 
 	inFile >> tempStr;
-	x = stoi(tempStr) +1;
+	y = stoi(tempStr) +1;
 
 	inFile >> tempStr;
-	y = stoi(tempStr) +1;
+	x = stoi(tempStr) +1;
 
 	map = (int**)malloc(sizeof(int*)*(n + 1));
 	d = (int**)malloc(sizeof(int*)*(n + 1));
@@ -203,32 +208,7 @@ void swapData(pdata * a, pdata * b)  // 두정수를 교환하는 함수
 
 pdata popPQ()  // min Heap 에 가장 작은 데이터를 제거하는 함수
 {
-	pdata returnValue = PQ[1];
-	int index = 1;
-	int child = 1 * 2;
-	pdata temp;
-	temp = PQ[PQ[0].d];  // 맨뒤의 키를 저장
-	PQ[0].d -= 1;
-	PQ[1] = temp;
-
-
-	while (child <= PQ[0].d)
-	{
-		if (child < PQ[0].d && PQ[child].d > PQ[child + 1].d)  // 작은 아들을 선택
-		{
-			child++;
-
-		}
-
-		if (temp.d <= PQ[child].d)  // 아들이 커질경우 정지 
-			break;
-
-		swapData(&PQ[index], &PQ[child]); // 아들을 현재위치로 이동
-		index = child;
-
-		child *= 2; //다음아들을 찾는다  
-	}
-	return returnValue;
+	return Q[front++];
 }
 
 
@@ -238,10 +218,10 @@ void printfPQ(int nodeNum)  // min heao 을 출력하는 함수
 	int cnt = 1;
 	int cnt2 = 1;
 
-	for (int i = 1; i <= PQ[0].d; i++)
+	for (int i = 1; i <= Q[0].d; i++)
 	{
 
-		printf_s("(<%d,%d>,%d)", PQ[i].y, PQ[i].x, PQ[i].d);
+		printf_s("(<%d,%d>,%d)", Q[i].y, Q[i].x, Q[i].d);
 		if (cnt2 == cnt)
 		{
 			printf_s("\n");
@@ -260,21 +240,5 @@ void printfPQ(int nodeNum)  // min heao 을 출력하는 함수
 
 void insertPQ(pdata insertData) // min Heap 에 데이터를  추가 하는함수 
 {
-	int index;
-	int parent;
-
-
-	PQ[0].d += 1;
-	PQ[PQ[0].d] = insertData;  // 맨뒤에 입력값을 넣어줍니다.
-
-	index = PQ[0].d;  //입력값의 위치
-	parent = index / 2;  // 입력값의 부모 위치
-
-	while (parent != 0 && PQ[parent].d > PQ[index].d) // 부모보다 작을경우 바꾼다
-	{
-		swapData(&PQ[parent], &PQ[index]);
-		index /= 2;
-		parent = index / 2;
-
-	}
+	Q[rear++] = insertData;  // 맨뒤에 입력값을 넣어줍니다.
 }
