@@ -1,3 +1,4 @@
+#define _crt_secure_no_warnings
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -18,17 +19,15 @@ typedef struct pdata
 
 
 
-void inputFile(int *nodeNum);
+void inputFile();
 
 int n = 0;
 pdata* PQ;
 
-
-int** flag;
 int** maze;
-int** d;
-int** px;
-int** py;
+int** Dir;
+char** Pos;
+int** flag;
 
 void swapData(pdata * a, pdata * b);
 pdata popPQ();
@@ -43,16 +42,27 @@ void main()
 {
 	
 	int top = 0;
-	inputFile(&n);
+	inputFile();
 	
-	PQ = new pdata[n*2];
+	PQ = new pdata[n*n];
 	PQ[0].x = 0;
 	PQ[0].y = 0;
 	PQ[0].d = 0;
 
 	dijkstra(1);
-	cout << "nearest :";
-	cout<< d[n][n];
+	
+
+	for (int i = 0; i <= n; i++)
+	{
+		free(maze[i]);
+		free(Dir[i]);
+		free(Pos[i]);
+		free(flag[i]);
+	}
+	free(maze);
+	free(Dir);
+	free(Pos);
+	free(flag);
 }
 
 void dijkstra(int r)
@@ -61,18 +71,18 @@ void dijkstra(int r)
 	{
 		for (int j = 1; j <= n; j++)
 		{
-			d[i][j] = infinity;
+			Dir[i][j] = infinity;
 			flag[i][j] = 0;
 		}
 	}
-	d[r][r] = 0;
-	px[r][r] = nil;
-	py[r][r] = nil;
+	Dir[r][r] = 0;
+	Pos[r][r] = nil;
+
 
 	pdata temp;
 	temp.x = r;
 	temp.y = r;
-	temp.d = d[r][r];
+	temp.d = Dir[r][r];
 	insertPQ(temp);
 
 	while (PQ[0].d != 0)
@@ -89,15 +99,29 @@ void dijkstra(int r)
 
 				int w =  (maze[vy][vx]? 0:1);
 				
-				if (flag[vy][vx] == 0 && d[u.y][u.x] + w < d[vy][vx])
+				if (flag[vy][vx] == 0 && Dir[u.y][u.x] + w < Dir[vy][vx])
 				{
-					py[vy][vx] = u.y;
-					px[vy][vx] = u.x;
-					d[vy][vx] = w + d[u.y][u.x];
+					switch (i)
+					{
+					case 0:
+						Pos[vy][vx] = 'D';
+						break;
+					case 1:
+						Pos[vy][vx] = 'L';
+						break;
+					case 2:
+						Pos[vy][vx] = 'U';
+						break;
+					case 3:
+						Pos[vy][vx] = 'R';
+						break;
+					}
+					
+					Dir[vy][vx] = w + Dir[u.y][u.x];
 					pdata temp;
 					temp.y = vy;
 					temp.x = vx;
-					temp.d = d[vy][vx];
+					temp.d = Dir[vy][vx];
 					insertPQ(temp);
 				}
 			}
@@ -105,6 +129,34 @@ void dijkstra(int r)
 		flag[u.y][u.x] = 1;
 		//printfPQ(n);
 	}
+	printf_s("%d", Dir[n][n]);
+
+	int x = n;
+	int y = n;
+	while (x != 1 || y!=1)
+	{
+		printf("<%d,%d>", y, x);
+		switch (Pos[y][x])
+		{
+		case 'D':
+			y += 1;
+			break;
+		case 'L':
+			x -= 1;
+
+			break;
+		case 'U':
+			y -= 1;
+			break;
+		case 'R':
+			x += 1;
+			break;
+		}
+
+	}
+	printf("<%d,%d>", y, x);
+
+
 }
 void printList(int**list, int num)
 {
@@ -117,33 +169,31 @@ void printList(int**list, int num)
 	cout << endl;
 }
 
-void inputFile(int *n )
+void inputFile()
 {
 
 	string tempStr;
 	char tempchar;
 	int i = 1;
-	ifstream inFile = ifstream("Text.txt");
+	ifstream inFile = ifstream("Text1.txt");
 
 	inFile >> tempStr;
-	*n = stoi(tempStr);
-	maze = (int**)malloc(sizeof(int*)*(*n+1));
-	d = (int**)malloc(sizeof(int*)*(*n + 1));
-	px = (int**)malloc(sizeof(int*)*(*n + 1));
-	py = (int**)malloc(sizeof(int*)*(*n + 1));
-	flag = (int**)malloc(sizeof(int*)*(*n + 1));
-	for (int i = 1; i <= *n; i++)
+	n = stoi(tempStr);
+	maze = (int**)malloc(sizeof(int*)*(n+1));
+	Pos = (char**)malloc(sizeof(char*)*(n + 1));
+	Dir = (int**)malloc(sizeof(int*)*(n + 1));
+	flag = (int**)malloc(sizeof(int*)*(n + 1));
+	for (int i = 0; i <= n; i++)
 	{
-		maze[i] = (int*)malloc(sizeof(int)*(*n + 1));
-		d[i] = (int*)malloc(sizeof(int)*(*n + 1));
-		px[i] = (int*)malloc(sizeof(int)*(*n + 1));
-		py[i] = (int*)malloc(sizeof(int)*(*n + 1));
-		flag[i] = (int*)malloc(sizeof(int)*(*n + 1));
+		maze[i] = (int*)malloc(sizeof(int)*(n + 1));
+		Dir[i] = (int*)malloc(sizeof(int)*(n + 1));
+		Pos[i] = (char*)malloc(sizeof(char)*(n + 1));
+		flag[i] = (int*)malloc(sizeof(int)*(n + 1));
 	}
 	inFile.get();
-	for (int i = 1; i <= *n; i++)
+	for (int i = 1; i <= n; i++)
 	{
-		for (int j = 1; j <= *n; j++)
+		for (int j = 1; j <= n; j++)
 		{
 			tempchar = inFile.get();
 			maze[i][j] = atoi(&tempchar);
