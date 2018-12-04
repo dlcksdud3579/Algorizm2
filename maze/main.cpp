@@ -175,7 +175,7 @@ void inputFile()
 	string tempStr;
 	char tempchar;
 	int i = 1;
-	ifstream inFile = ifstream("Text1.txt");
+	ifstream inFile = ifstream("Text.txt");
 
 	inFile >> tempStr;
 	n = stoi(tempStr);
